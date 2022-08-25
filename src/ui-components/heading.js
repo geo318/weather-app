@@ -8,9 +8,19 @@ export default function Heading({h1,h2,h3,h4,h5,h6,className,text,bold}) {
     const hStyle = {
         'fontWeight':bold
     }
+
+    const loadingStyle = !data || !text ? {
+        'backgroundColor': '#eee',
+        'width': '100%',
+        'color': 'transparent',
+        'display':'table',
+        'lineHeight': 1,
+        'height': 20
+    } : {}
+
     return (       
         <>
-            <div className={`flx heading ${className ? className : ''} ${data ? '' : 'filler'}`}>
+            <div className={`${data ? 'flx' : 'block'} heading${className ? className : ''} ${data || text ? '' : 'filler'}`} style = {loadingStyle}>
                 {
                     (h1 && <h1 style={hStyle}>{text}</h1>) ||
                     (h2 && <h2 style={hStyle}>{text}</h2>) ||

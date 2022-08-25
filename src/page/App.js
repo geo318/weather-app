@@ -91,20 +91,23 @@ function App() {
         <>
           <Header searchPlace = {searchPlace} onSubmit={printRes} place = {place} querry = {querry}/>
           
-          <Heading h2 text={place}/>
+          <Flx render = {[ 
+            <Heading h2 text={placeData && place}/>,
+            <Flx grow render = {[<Divider/>,]}/>
+          ]}/>
 
           
 
-          <Flx className='weather-cards-container' render = {[
+          <Flx className='weather-cards-container' vCenter = 'flex-start' render = {[
             <weatherData.Provider value = {arragedData}>
             <Flx key = '2day' column className='card today' render = {[
               <div key='card-today-inner-content'>
                 <Heading h2 bold='600' text = {getWeekday(arragedData?.[0]?.time)}/>
                 
                 <Flx render = {[
-                  <Flx key='weather-icon' render = {[ <div key='w-ic'>{weatherSymbolLookup(placeData?.current_weather?.weathercode, placeData?.current_weather?.time, sunSet, sunRise)}</div> || <Error key='err' render = {placeData.error}/> ]}/>,
+                  <Flx grow className='weather-icon-2day' key='weather-icon' render = {[ (placeData && <div key='w-ic'>{weatherSymbolLookup(placeData?.current_weather?.weathercode, placeData?.current_weather?.time, sunSet, sunRise)}</div>) || <Flx hCenter='center' render={[<Spinner key = 'spin-weather' width = '30' color = '#f8b62d'/>]}/> || <Error key='err' render = {placeData.error}/> ]}/>,
                   <Divider key = 'v-div' width={10}/>,
-                  <Flx key = 'windset' column render={[
+                  <Flx width='40%' key = 'windset' className='wind-cont' column render={[
                     <Divider key = 'w-div-0' height={10}/>,
                     <Heading key = 'w-dir' h6 text={`${calculateDirection(placeData?.current_weather?.winddirection)}`}/>,
                     <Divider key = 'w-div-1' height={10}/>,
@@ -130,7 +133,7 @@ function App() {
             </weatherData.Provider>
             ,
 
-            <Flx key = 'next-days' className='card-container' render= {
+            <Flx key = 'next-days' hCenter = 'center' vCenter= 'center' className='card-container' render= {
               arragedData?.slice(1)?.map((e,i)=> {
                 const data = arragedData?.slice(1); 
                 return (

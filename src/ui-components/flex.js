@@ -1,11 +1,13 @@
 import Spinner from "./spinner/spinner"
 
-export default function Flx({hCenter, vCenter, render, className, column}) {
+export default function Flx({hCenter, vCenter, render, className, column, grow, width}) {
     const flxStyle = {
         "display": "flex",
         "justifyContent": hCenter,
         "alignItems": vCenter || 'center',
-        "flexDirection": column ? 'column' : 'row'
+        "flexDirection": column ? 'column' : 'row',
+        'flexGrow': grow ? 1 : '0',
+        'width': width ? width: '100%',
     }
 
     return (

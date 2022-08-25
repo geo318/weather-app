@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Icon from "../ui-components/icon";
 import Flx from "../ui-components/flex";
 import Input from "../ui-components/input";
@@ -13,9 +13,22 @@ import location from "../media/icons/location.svg";
 import Spinner from "../ui-components/spinner/spinner";
 
 export default function Header({place, querry, searchPlace, onSubmit}) {
+    const [debounce, setDebounce] = useState('')
+    const timer = useRef(null)
 
+    const debounceQuerry = (delay = 1000) => {
+        clearTimeout(timer.current)
+        timer.current = setTimeout(()=> setDebounce(querry),
+        delay)
+    }
+
+    useEffect(() => {
+        debounceQuerry()
+    },[querry])
+    
     return (
         <>
+        {debounce}
             <Wrapper style = {{'padding':'15px 0'}} render = {
                 <Flx key = 'flex-container' className = {'header'} vCenter='center' render = {[
                     <Icon key = 'logo' width = '40px' render={logo} />,
@@ -23,7 +36,8 @@ export default function Header({place, querry, searchPlace, onSubmit}) {
                     <Flx key = 'flex-location-container' vCenter='center' render = {[
                         <Icon key = 'location-icon' width = '15px' render={location}/>,
                         <Divider key = 'divider-1' width = '10px'/>,
-                        <Heading key = 'location-name' h5 text={place || <Spinner key='spin2' width = '30' color = '#f8b62d'/>}/>
+                        <Heading key = 'location-name' h5 text={place ? place : ''}/>,
+                        <Flx grow key='filler' render={[<Divider key = 'divider-1'/>]}/>,
                     ]}/>,
                     <Divider key = 'divider-2' grow = '.5'/>,
                     <Flx key = 'flex-search-cont' className='search-bar' render = {[
