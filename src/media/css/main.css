@@ -1,0 +1,92 @@
+h1 {
+    font-size: 36px;
+    line-height: 40px;
+}
+
+h2 {
+    font-size: 30px;
+    line-height: 40px;
+}
+
+h3 {
+    font-size: 24px;
+    line-height: 40px;
+}
+
+h4 {
+    font-size: 18px;
+    line-height: 20px;
+}
+
+h5 {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+h6 {
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.search-bar input {
+    position: absolute;
+    border: 0;
+    border-radius: 30px;
+    inset: 0 0 0 34px;
+    padding: 10px;
+
+}
+.search-bar input:focus {
+    outline: none;
+}
+.search-bar {
+    position: relative;
+    border:1px solid;
+    border-radius: 30px;
+    overflow: hidden;
+    flex-grow: 1;
+    height: 40px;
+    padding: 10px 15px;
+}
+
+.search-bar:focus-within {
+    outline: 1px solid;
+}
+
+.pointer:hover,.button:hover {
+    cursor: pointer;
+}
+
+.card-container {
+    margin: 10px 0;
+}
+.card {
+    border: 1px solid #eee;
+    border-radius: 20px;
+    margin: 0 5px;
+    padding: 15px 18px;
+    box-shadow: 0 0 10px 0px rgba(0 0 0 / 10%);
+}
+
+.card .weather-icon {
+    width: 100px;
+}
+
+.today .weather-icon {
+    width: 150px
+}
+
+.today {
+    max-width: 256px;
+}
+.card-label .label {
+    flex-grow: 1;
+    color: #777;
+
+}
+
+
+.filler {
+    background-color: #eee;
+    color: transparent !important
+}

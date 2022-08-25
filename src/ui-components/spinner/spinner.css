@@ -1,0 +1,29 @@
+
+.loading_wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 20px;
+    padding: 10px
+  }
+  .loading {
+      min-width: 20px;
+      min-height: 20px;
+      border-radius: 50%;
+      background-color: transparent;
+      border: 1px solid;
+      -webkit-animation: 1s spin linear infinite;
+      animation: 750ms spin linear infinite;
+  }
+  
+  @keyframes spin {
+    from {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    to {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  
