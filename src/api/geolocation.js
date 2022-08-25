@@ -1,18 +1,10 @@
 
+import { fetchApiData } from "./fetchdata";
+
 export const getLocation = (callBack) => {
     navigator.geolocation.getCurrentPosition(callBack)
 }
 
-const fetchApiData = async (url) => {
-    try {
-        const response = await fetch(url);
-        const jsonResponse = await response.json()
-        return jsonResponse
-
-    } catch(e) {
-        console.log(e)
-    }
-}
 export const locationApi = async () => {
     const url = "https://ipgeolocation.abstractapi.com/v1/";
     const apiKey = "?api_key=223d90050de14898b18876c34c9c3d5c"
