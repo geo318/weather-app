@@ -54,6 +54,7 @@ function App() {
     const 
       accuratePosition = await reverseGeoLocation(lat,lon), 
       positionResived = accuratePosition?.features?.[0]?.properties
+      console.log(positionResived)
     setPlace(positionResived?.city || positionResived?.village || positionResived?.county || positionResived?.country);
   }
 
@@ -115,7 +116,7 @@ function App() {
       <Wrapper>
         <>
           <Header searchPlace = {searchPlace} onSubmit={printRes} place = {place} querry = {querry} setQuerry = {setQuerry} setPosition={setPosition}/>
-          <Wrapper className='weather-wrapper' style={{'padding-inline':20}}>
+          <Wrapper className='weather-wrapper' style={{'padding-inline':20, 'maxWidth':1335}}>
             <Divider height='20px'/>
             <Flx className='weather-cards-container' vCenter = 'flex-start' hCenter='flex-start'>
               <weatherData.Provider value = {arragedData}>

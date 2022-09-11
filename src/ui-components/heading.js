@@ -3,7 +3,7 @@ import { weatherData } from "../contexts/weather-data-context"
 import { useContext } from "react"
 import Spinner from "./spinner/spinner"
 
-export default function Heading({h1,h2,h3,h4,h5,h6,className,text,bold}) {
+export default function Heading({h1,h2,h3,h4,h5,h6,className,text,bold,fullWidth}) {
     const data = useContext(weatherData)
     const hStyle = {
         'fontWeight':bold
@@ -20,7 +20,7 @@ export default function Heading({h1,h2,h3,h4,h5,h6,className,text,bold}) {
 
     return (       
         <>
-            <div className={`${data ? 'flx' : 'block'} heading${className ? className : ''} ${data || text ? '' : 'filler'}`} style = {loadingStyle}>
+            <div className={`${data ? 'flx' : 'block'} heading${className ? className : ''} ${data || text ? '' : 'filler'}`} style = {{'width': fullWidth ? '100%' : 'auto',...loadingStyle}}>
                 {
                     (h1 && <h1 style={hStyle}>{text}</h1>) ||
                     (h2 && <h2 style={hStyle}>{text}</h2>) ||

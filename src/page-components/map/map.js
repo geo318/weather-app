@@ -15,7 +15,7 @@ export default function Map({coords}) {
                     <TileLayer url="https://api.maptiler.com/maps/outdoor/{z}/{x}/{y}.png?key=IdkxbfGgtcZTuLlkuprf" />
                     <Marker position={position} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})} />
                     <UpdateMap coords={position} />
-                    <ZoomControl position="bottomright"/>
+                    <ZoomControl position="topright"/>
                 </MapContainer>
             }
             <div className='map-overlay'/>

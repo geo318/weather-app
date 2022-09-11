@@ -56,7 +56,7 @@ export default function Header({place, querry, setQuerry, searchPlace, onSubmit,
                     <Flx key = 'flex-location-container' vCenter='center' render = {[
                         <Icon key = 'location-icon' width = '15px' render={location}/>,
                         <Divider key = 'divider-1' width = '10px'/>,
-                        <Heading key = 'location-name' h3 bold='700' color='#454545' text={place ? place : ''}/>,
+                        <Heading key = 'location-name' h3 bold='700' fullWidth color='#454545' text={place ? place : ''}/>,
                         <Flx grow key='filler' render={[<Divider key = 'divider-1'/>]}/>,
                     ]}/>,
                     <Divider key = 'divider-2' grow = '.5'/>,
