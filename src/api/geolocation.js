@@ -1,7 +1,7 @@
 
 import { fetchApiData } from "./fetchdata";
 
-export const getLocation = (callBack) => {
+export const getLocation = async (callBack) => {
     navigator.geolocation.getCurrentPosition(callBack)
 }
 

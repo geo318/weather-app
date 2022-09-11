@@ -20,51 +20,75 @@ import Divider from '../ui-components/divider';
 import Windmill from '../ui-components/windmill/windmill';
 import { calculateDirection } from '../helper/compass-direction';
 import { weatherData } from '../contexts/weather-data-context';
+import Map from '../page-components/map/map';
 
 function App() {
-  const [place, setPlace] = useState('')
-  const [querry, setQuerry] = useState('')
-  const [placeData, setPlaceData] = useState('')
-  const [weather, setWeather] = useState('')
-  const [arragedData, setArragedData] = useState()
+  const 
+    [place, setPlace] = useState(''),
+    [querry, setQuerry] = useState(''),
+    [placeData, setPlaceData] = useState(''),
+    [position, setPosition] = useState({lat:'', lon:''}),
+    [arragedData, setArragedData] = useState();
 
   const printRes = async (e) => {
     e.preventDefault()
-    setPlaceData('')
     if(querry === "") return
-    const res = await sendQuerry(querry)
-    const latitude = res?.data[0]?.latitude
-    const longitude = res?.data[0]?.longitude
-    setPlace(querry);
-    const weatherData = await getWeatherData(latitude,longitude)
-    setPlaceData(weatherData)
-    const data = await rearragedData(weatherData)
-    setArragedData(data)
-
+    const 
+      res = await sendQuerry(querry), 
+      lat = res?.data[0]?.latitude,
+      lon = res?.data[0]?.longitude;
+      if(!lat || !lon) return true
+      setPlace(querry);
+      setPosition({lat,lon})
   }
 
   const showPosition = async (position) => {
-    const weatherData = await getWeatherData(position.coords.latitude, position.coords.longitude)
-    const accuratePosition = await reverseGeoLocation(position.coords.latitude, position.coords.longitude);
-    const positionResived = accuratePosition?.features?.[0]?.properties
+    getLocationInfo(position.coords.latitude, position.coords.longitude)
+    const 
+      lat = position.coords.latitude, 
+      lon = position.coords.longitude;
+    setPosition({lat,lon})
+  }
+
+  const getLocationInfo = async (lat, lon) => {
+    const 
+      accuratePosition = await reverseGeoLocation(lat,lon), 
+      positionResived = accuratePosition?.features?.[0]?.properties
     setPlace(positionResived?.city || positionResived?.village || positionResived?.county || positionResived?.country);
+  }
+
+  const fetchAndSetData = async (lat,lon) => {
+    const weatherData = await getWeatherData(lat, lon)
     setPlaceData(weatherData)
     const data = await rearragedData(weatherData)
     setArragedData(data)
-    console.log(weatherData)
   }
 
   useEffect(()=> {
-    return () => getLocation(showPosition)
+    return () => (async ()=> {
+      getLocation(showPosition)
+      if(position.lat) return
+      const locationFromIp = await locationApi();
+      setPosition({lat: locationFromIp.latitude, lon: locationFromIp.longitude})
+    })()
   },[])
+
+  useEffect(()=>{
+    if(position.lat){
+      getLocationInfo(position.lat, position.lon)
+      fetchAndSetData(position.lat, position.lon)
+    }
+  },[position])
 
   const searchPlace = (querry) => {
     setQuerry(querry)
   }
 
   const rearragedData = async (array) => {
-    const data = array.daily
-    let newOrder = []
+    let 
+      data = array.daily,
+      newOrder = [];
+
     data?.time?.forEach((e,i) => {
       newOrder.push(
         { time: e, 
@@ -82,80 +106,82 @@ function App() {
     return await Promise.all(newOrder)
   }
 
-  const sunSet = arragedData?.[0]?.s_set
-  const sunRise = arragedData?.[0]?.s_rise
+  const 
+    sunSet = arragedData?.[0]?.s_set,
+    sunRise = arragedData?.[0]?.s_rise;
 
   return (
     <>
-      <Wrapper style = {{'paddingInline':'20px'}} render = {
+      <Wrapper>
         <>
-          <Header searchPlace = {searchPlace} onSubmit={printRes} place = {place} querry = {querry}/>
-          
-          <Flx render = {[ 
-            <Heading h2 text={placeData && place}/>,
-            <Flx grow render = {[<Divider/>,]}/>
-          ]}/>
-
-          
-
-          <Flx className='weather-cards-container' vCenter = 'flex-start' render = {[
-            <weatherData.Provider value = {arragedData}>
-            <Flx key = '2day' column className='card today' render = {[
-              <div key='card-today-inner-content'>
-                <Heading h2 bold='600' text = {getWeekday(arragedData?.[0]?.time)}/>
-                
-                <Flx render = {[
-                  <Flx grow className='weather-icon-2day' key='weather-icon' render = {[ (placeData && <div key='w-ic'>{weatherSymbolLookup(placeData?.current_weather?.weathercode, placeData?.current_weather?.time, sunSet, sunRise)}</div>) || <Flx hCenter='center' render={[<Spinner key = 'spin-weather' width = '30' color = '#f8b62d'/>]}/> || <Error key='err' render = {placeData.error}/> ]}/>,
-                  <Divider key = 'v-div' width={10}/>,
-                  <Flx width='40%' key = 'windset' className='wind-cont' column render={[
-                    <Divider key = 'w-div-0' height={10}/>,
-                    <Heading key = 'w-dir' h6 text={`${calculateDirection(placeData?.current_weather?.winddirection)}`}/>,
-                    <Divider key = 'w-div-1' height={10}/>,
-                    <Wrapper key='compass' style = {{'padding': '0 10px'}} render = {<Compass key = 'compass' size = {35} rotate = {placeData?.current_weather?.winddirection}/>} />,
-                    <Divider key = 'border-b' height='15px' border = '1px solid #eee'/>,
-                    <Heading key = 'w-speed' h6 text={`${placeData?.current_weather?.windspeed} ${placeData?.daily_units?.windspeed_10m_max}`}/>,
-                    <Windmill key='windmill' size = {40} speed={placeData?.current_weather?.windspeed}/>,
-                  ]}/>
-                ]}/>
-                
-                
-                <Divider height='15px' border = '1px solid #eee'/>
-                <Heading h4 text={weatherDescLookup(placeData?.current_weather?.weathercode)}/>
-                <Divider height='5px'/>
-                <Label label = 'current temperature:' lSize='14px' tSize='18px' tBold lBold text = {`${placeData?.current_weather?.temperature} ${placeData?.daily_units?.temperature_2m_max}`} className='card-label' gap='10px'/>
-                <Divider height='15px' border = '1px solid #eee'/>
-                <Label label = 'Highest today:' lSize='12px' tSize='12px' tBold text = {`${arragedData?.[0]?.t_max.toString().split('.')[0]} ${placeData?.daily_units?.temperature_2m_max}`} className='card-label' gap='10px'/>
-                <Divider height='10px'/>
-                <Label label = 'Lowest today:' lSize='12px' tSize='12px' tBold text = {`${arragedData?.[0]?.t_min.toString().split('.')[0]} ${placeData?.daily_units?.temperature_2m_max}`} className='card-label' gap='10px'/>
-                
-              </div>
-            ]}/>
-            </weatherData.Provider>
-            ,
-
-            <Flx key = 'next-days' hCenter = 'center' vCenter= 'center' className='card-container' render= {
-              arragedData?.slice(1)?.map((e,i)=> {
-                const data = arragedData?.slice(1); 
-                return (
-                  <div key = {i} className='card'>
-                    <Flx hCenter='center' render = {[<div key='weather symbol'>{weatherSymbolLookup(e.w_code)}</div>]}/>
-                    <Heading h4 bold='600' text = {getWeekday(data?.[i]?.time)}/>
-                    <Divider height='15px' border = '1px solid #eee'/>
-                    <Label label = 'Highest °C:' lSize='13px' tSize='14px' tBold text = {`${data[i].t_max.toString().split('.')[0]} ${placeData?.daily_units?.temperature_2m_max}`} className='card-label' gap='20px'/>
+          <Header searchPlace = {searchPlace} onSubmit={printRes} place = {place} querry = {querry} setQuerry = {setQuerry} setPosition={setPosition}/>
+          <Wrapper className='weather-wrapper' style={{'padding-inline':20}}>
+            <Divider height='20px'/>
+            <Flx className='weather-cards-container' vCenter = 'flex-start' hCenter='flex-start'>
+              <weatherData.Provider value = {arragedData}>
+                <Flx key = '2day' column className='card today'>
+                  <div key='card-today-inner-content'>
+                    <Heading h3 bold='600' text = {getWeekday(arragedData?.[0]?.time)}/>
+                    
+                    <Flx>
+                      <Flx grow className='weather-icon-2day' vCenter='flex-start'>
+                        {
+                          (placeData && <div key='w-ic'>{weatherSymbolLookup(placeData?.current_weather?.weathercode, placeData?.current_weather?.time, sunSet, sunRise)}</div>) || 
+                          <Flx hCenter='center'>
+                            <Spinner key = 'spin-weather' width = '30' color = '#f8b62d'/>
+                          </Flx> || <Error key='err' render = {placeData.error}/>
+                        }
+                      </Flx>
+                      <Divider width={10}/>
+                      <Flx width='40%' key = 'windset' className='wind-cont' column>
+                        <Heading h6 text={`${calculateDirection(placeData?.current_weather?.winddirection)}`}/>
+                        <Divider height={5}/>
+                        <Compass key = 'compass' size = {25} rotate = {placeData?.current_weather?.winddirection}/>
+                        <Divider height='5px' border = '1px solid #eee'/>
+                        <Heading h6 text={`${placeData?.current_weather?.windspeed} ${placeData?.daily_units?.windspeed_10m_max}`}/>
+                        <Windmill size = {25} speed={placeData?.current_weather?.windspeed}/>
+                      </Flx>
+                    </Flx>
+                    
+                    <Divider height='5px' border = '1px solid #eee'/>
+                    <Heading h4 text={weatherDescLookup(placeData?.current_weather?.weathercode)}/>
                     <Divider height='5px'/>
-                    <Label label = 'Lowest °C:' lSize='13px' tSize='14px' tBold text ={`${(data[i].t_min).toString().split('.')[0]} ${placeData?.daily_units?.temperature_2m_max}`} className='card-label' gap='20px'/>
-                    <Divider height='10px' border = '1px solid #eee'/>
-                    <Label label = 'sunrise:' lSize='12px' tSize='12px' text = {`${getTime(data[i].s_rise)} am`} className='card-label' gap='10px'/>
+                    <Label label = 'current temperature:' lSize='14px' tSize='18px' tBold lBold text = {`${placeData?.current_weather?.temperature} ${placeData?.daily_units?.temperature_2m_max}`} className='card-label' gap='20px'/>
+                    <Divider height='5px' border = '1px solid #eee'/>
+                    <Label label = 'Highest today:' lSize='12px' tSize='12px' tBold text = {`${arragedData?.[0]?.t_max.toString().split('.')[0]} ${placeData?.daily_units?.temperature_2m_max}`} className='card-label' gap='20px'/>
                     <Divider height='5px'/>
-                    <Label label = 'sunset:' lSize='12px' tSize='12px' text = {`${getTime(data[i].s_set)} pm`} className='card-label' gap='10px'/>
+                    <Label label = 'Lowest today:' lSize='12px' tSize='12px' tBold text = {`${arragedData?.[0]?.t_min.toString().split('.')[0]} ${placeData?.daily_units?.temperature_2m_max}`} className='card-label' gap='10px'/>
+                    
                   </div>
-                )
-              })
-            }/>,
-          ]}/>
+                </Flx>
+              </weatherData.Provider>
 
+              <Flx key = 'next-days' hCenter = 'center' vCenter= 'flex-start' className='card-container' render= {
+                arragedData?.slice(1)?.map((e,i)=> {
+                  const data = arragedData?.slice(1); 
+                  return (
+                    <div key = {i} className='card'>
+                      <Flx hCenter='center'>
+                        <div key='weather symbol'>{weatherSymbolLookup(e.w_code)}</div>
+                      </Flx>
+                      <Heading h4 bold='600' text = {getWeekday(data?.[i]?.time)}/>
+                      <Divider height='15px' border = '1px solid #eee'/>
+                      <Label label = 'Highest °C:' lSize='13px' tSize='14px' tBold text = {`${data[i].t_max.toString().split('.')[0]} ${placeData?.daily_units?.temperature_2m_max}`} className='card-label' gap='20px'/>
+                      <Divider height='5px'/>
+                      <Label label = 'Lowest °C:' lSize='13px' tSize='14px' tBold text ={`${(data[i].t_min).toString().split('.')[0]} ${placeData?.daily_units?.temperature_2m_max}`} className='card-label' gap='20px'/>
+                      <Divider height='10px' border = '1px solid #eee'/>
+                      <Label label = 'sunrise:' lSize='12px' tSize='12px' text = {`${getTime(data[i].s_rise)} am`} className='card-label' gap='10px'/>
+                      <Divider height='5px'/>
+                      <Label label = 'sunset:' lSize='12px' tSize='12px' text = {`${getTime(data[i].s_set)} pm`} className='card-label' gap='10px'/>
+                    </div>
+                  )
+                })
+              }/>
+            </Flx>
+            <Map coords={position}/>
+          </Wrapper>
         </>
-      }/>
+      </Wrapper>
     </>
   );
 }

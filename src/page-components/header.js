@@ -14,7 +14,7 @@ import Spinner from "../ui-components/spinner/spinner";
 import { getAutocompleteData } from "../api/autocomplete";
 import Autocomplete from "./autocomplete-results";
 
-export default function Header({place, querry, searchPlace, onSubmit}) {
+export default function Header({place, querry, setQuerry, searchPlace, onSubmit, setPosition}) {
     const [debounce, setDebounce] = useState('')
     const [autocompleteData, setAutocompleteData] = useState([])
     const timer = useRef(null)
@@ -41,18 +41,22 @@ export default function Header({place, querry, searchPlace, onSubmit}) {
 
     },[debounce])
 
-    console.log(autocompleteData)
+    const handleSubmit = (e) => {
+        const negativeResult = onSubmit(e);
+        if(negativeResult) return
+        setAutocompleteData([])
+    }
+
     return (
         <>
-        {debounce}
-            <Wrapper style = {{'padding':'15px 0'}} render = {
+            <Wrapper style = {{'padding':'15px 20px'}} className='header-wrapper' render = {
                 <Flx key = 'flex-container' className = {'header'} vCenter='center' render = {[
                     <Icon key = 'logo' width = '40px' render={logo} />,
                     <Divider key = 'divider-1' width = '20px'/>,
                     <Flx key = 'flex-location-container' vCenter='center' render = {[
                         <Icon key = 'location-icon' width = '15px' render={location}/>,
                         <Divider key = 'divider-1' width = '10px'/>,
-                        <Heading key = 'location-name' h5 text={place ? place : ''}/>,
+                        <Heading key = 'location-name' h3 bold='700' color='#454545' text={place ? place : ''}/>,
                         <Flx grow key='filler' render={[<Divider key = 'divider-1'/>]}/>,
                     ]}/>,
                     <Divider key = 'divider-2' grow = '.5'/>,
@@ -62,12 +66,12 @@ export default function Header({place, querry, searchPlace, onSubmit}) {
                                 <Button key = 'search-icon-button' type = 'submit' onClick={onSubmit} render = {
                                     <Icon width = '20px' render={search}/>
                                 }/>
-                                <Form key = 'search-form' onSubmit={onSubmit} render = {[
+                                <Form key = 'search-form' onSubmit={handleSubmit} render = {[
                                     <Input key = 'search-input' onChange = {searchPlace} value = {querry} placeholder = 'search place...'/>,
                                 ]}/>
                             </>
                         }/>,
-                        <Autocomplete key='autocomplete' className = 'autocomplete' querry = {querry} data = {autocompleteData?.features}/>
+                        <Autocomplete key='autocomplete' className = 'autocomplete' querry = {querry} setQuerry={setQuerry} data = {autocompleteData?.features} setPosition={setPosition}/>
                     ]}/>,
                     <Divider key = 'divider-3' grow = '.5'/>,
                     <Divider key = 'divider-4' grow = '.5'/>,

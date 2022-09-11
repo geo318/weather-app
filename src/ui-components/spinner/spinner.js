@@ -6,7 +6,7 @@ export default function Spinner({width, color}) {
     const spinnerStyle = {
         'width': `${width}px`,
         'height': `${width}px`,
-        'borderWidth': width / 10,
+        'borderWidth': width ? width / 10 : 2,
         'borderColor' : color,
         'borderTopColor': 'transparent',
     }

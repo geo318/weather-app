@@ -16,9 +16,11 @@ img {
   width: 100%;
 }
 
-.wrapper {
+.wrapper:before,.wrapper:after {
   display: table;
   content: "";
   clear: both;
-  width: 100%;
+}
+.wrapper {
+  display: block;
 }

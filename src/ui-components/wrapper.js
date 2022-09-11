@@ -1,9 +1,9 @@
-export default function Wrapper({style, render, className}) {
+export default function Wrapper({style, render, children, className}) {
 
     return (
-        <div className={`wrapper ${className ? className : ''}`} style = {style}>
+        <div className={`wrapper${className ? ` ${className}` : ''}`} style = {style}>
             { 
-                render
+                render || children
             }
         </div>
     )

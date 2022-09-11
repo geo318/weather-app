@@ -1,6 +1,6 @@
 import Spinner from "./spinner/spinner"
 
-export default function Flx({hCenter, vCenter, render, className, column, grow, width}) {
+export default function Flx({hCenter, vCenter, render, className, column, grow, width, children}) {
     const flxStyle = {
         "display": "flex",
         "justifyContent": vCenter || 'center',
@@ -13,8 +13,9 @@ export default function Flx({hCenter, vCenter, render, className, column, grow, 
     return (
         <div className={`flx${className ? ` ${className}` : ''}`} style = {flxStyle}>
             { 
-                render?.map((e, i) => e ) || <Spinner width = '30' color = '#f8b62d'/>
+                render?.map((e, i) => e ) || (!children && <Spinner width = '30' color = '#f8b62d'/>)
             }
+            {children}
         </div>
     )
 }
