@@ -13,6 +13,8 @@ import location from "../media/icons/location.svg";
 import Spinner from "../ui-components/spinner/spinner";
 import { getAutocompleteData } from "../api/autocomplete";
 import Autocomplete from "./autocomplete-results";
+import burger from "../media/icons/burger.svg"
+import Menu from "../ui-components/menu/menu";
 
 export default function Header({place, querry, setQuerry, searchPlace, onSubmit, setPosition}) {
     const [debounce, setDebounce] = useState('')
@@ -49,19 +51,18 @@ export default function Header({place, querry, setQuerry, searchPlace, onSubmit,
 
     return (
         <>
-            <Wrapper style = {{'padding':'15px 20px'}} className='header-wrapper' render = {
-                <Flx key = 'flex-container' className = {'header'} vCenter='center' render = {[
-                    <Icon key = 'logo' width = '40px' render={logo} />,
-                    <Divider key = 'divider-1' width = '20px'/>,
-                    <Flx key = 'flex-location-container' vCenter='center' render = {[
-                        <Icon key = 'location-icon' width = '15px' render={location}/>,
-                        <Divider key = 'divider-1' width = '10px'/>,
-                        <Heading key = 'location-name' h3 bold='700' fullWidth color='#454545' text={place ? place : ''}/>,
-                        <Flx grow key='filler' render={[<Divider key = 'divider-1'/>]}/>,
-                    ]}/>,
-                    <Divider key = 'divider-2' grow = '.5'/>,
-                    <Flx key = 'flex-search-cont' className='search-bar' render = {[
-                        <Wrapper key = 'search' render = {
+            <Wrapper style = {{'padding':'15px 20px'}} className='header-wrapper'>
+                <Flx key = 'flex-container' className = {'header'} vCenter='center'>
+                    <Icon width = '40px' render={logo} />
+                    <Divider width = '20px'/>
+                    <Flx vCenter='center'>
+                        <Icon width = '15px' render={location}/>
+                        <Divider width = '10px'/>
+                        <Heading h3 bold='700' fullWidth color='#454545' text={place ? place : ''}/>
+                    </Flx>
+                    <Divider grow = '.5'/>
+                    <Flx className='search-bar' vCenter='flex-start'>
+                        <div key = 'search'>
                             <>
                                 <Button key = 'search-icon-button' type = 'submit' onClick={onSubmit} render = {
                                     <Icon width = '20px' render={search}/>
@@ -70,14 +71,16 @@ export default function Header({place, querry, setQuerry, searchPlace, onSubmit,
                                     <Input key = 'search-input' onChange = {searchPlace} value = {querry} placeholder = 'search place...'/>,
                                 ]}/>
                             </>
-                        }/>,
+                        </div>
                         <Autocomplete key='autocomplete' className = 'autocomplete' querry = {querry} setQuerry={setQuerry} data = {autocompleteData?.features} setPosition={setPosition}/>
-                    ]}/>,
-                    <Divider key = 'divider-3' grow = '.5'/>,
-                    <Divider key = 'divider-4' grow = '.5'/>,
-                    
-                ]}/>
-            }/>
+                    </Flx>
+                    <Divider grow = '.5'/>
+                    <Divider width='50px'/>
+                    <Flx className='burger' width="40px">
+                        <Menu right width='500'>blablabla</Menu>
+                    </Flx>
+                </Flx>
+            </Wrapper>
         </>
     )
 }

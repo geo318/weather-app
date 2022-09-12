@@ -1,4 +1,4 @@
-export default function Icon({width, alt, render,className}) {
+export default function Icon({width, alt, render,className,onClick}) {
 
     const iconStyle = {
         'minWidth' :width,
@@ -9,7 +9,7 @@ export default function Icon({width, alt, render,className}) {
 
     return (
         <>
-            <div className={className ? `${className}-icon` : 'icon'} style = {iconStyle}>
+            <div className={className ? `${className}-icon` : 'icon'} style = {iconStyle} onClick ={onClick}>
                 {<img src={ render } alt={alt}/>}
             </div>
         </>

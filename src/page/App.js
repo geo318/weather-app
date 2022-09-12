@@ -116,7 +116,7 @@ function App() {
       <Wrapper>
         <>
           <Header searchPlace = {searchPlace} onSubmit={printRes} place = {place} querry = {querry} setQuerry = {setQuerry} setPosition={setPosition}/>
-          <Wrapper className='weather-wrapper' style={{'padding-inline':20, 'maxWidth':1335}}>
+          <Wrapper className='weather-wrapper' style={{'paddingInline':20, 'maxWidth':1335, "margin":"0 auto"}}>
             <Divider height='20px'/>
             <Flx className='weather-cards-container' vCenter = 'flex-start' hCenter='flex-start'>
               <weatherData.Provider value = {arragedData}>
